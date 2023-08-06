@@ -6,6 +6,7 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth import logout, login
 from django.views.generic import CreateView
 from .forms import *
+from .models import Target
 '''
 bootstrap быстрый сделать
 '''
@@ -43,4 +44,15 @@ def logout_user(request):
     return redirect('index')
 
 def main_screen_yo(request):
-    return render(request, "main_app/main_screen.html", {})
+    if request.method == 'POST':
+        form = AddTargetForm(request.POST)
+        if form.is_valid():
+            #print('сохранена цель')
+            try:
+                Target.objects.create(**form.cleaned_data)
+                return redirect('main_screen')
+            except:
+                form.add_error(None, 'Error detected check')
+    else:
+        form = AddTargetForm()
+    return render(request, "main_app/main_screen.html", {'form': form,})
