@@ -7,6 +7,7 @@ from django.contrib.auth import logout, login
 from django.views.generic import CreateView
 from .forms import *
 from .models import Target
+from django.utils.dateparse import parse_date
 '''
 bootstrap быстрый сделать
 '''
@@ -44,6 +45,7 @@ def logout_user(request):
     return redirect('index')
 
 def main_screen_yo(request):
+    latest_targets_list = Target.objects.order_by("-pub_date")
     if request.method == 'POST':
         form = AddTargetForm(request.POST)
         if form.is_valid():
@@ -55,4 +57,9 @@ def main_screen_yo(request):
                 form.add_error(None, 'Error detected check')
     else:
         form = AddTargetForm()
-    return render(request, "main_app/main_screen.html", {'form': form,})
+    context = {
+        'form': form,
+        'latest_targets_list': latest_targets_list,
+        'today': parse_date,
+    }
+    return render(request, "main_app/main_screen.html", context)

@@ -82,9 +82,9 @@
       >
         <div class="modal-dialog modal-dialog-centered">
           <div class="modal-content">
-            <div class="modal-header"">
-              <h1 class="modal-title fs-5" id="exampleModalLabel">
-                Add Target
+            <div class="modal-header" style="background-color: #1f273b;">
+              <h1 class="modal-title fs-5" id="exampleModalLabel" style="color: #ebf5ee; size: 5vw;">
+                Add Task
               </h1>
               <button
                 type="button"
@@ -93,30 +93,84 @@
                 aria-label="Close"
               ></button>
             </div>
-            <div class="modal-body" style="display: flex; justify-content: center;">
+            <div class="modal-body" style="display: flex; justify-content: center; flex-direction: column; background-color: #283044; margin: 0; padding: 0;">
               {% block content %}
               <form action="{{ form.save }}" method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">add</button>
+                <p style="text-align: center; margin: 0%; color: #ebf5ee;">Task text</p>
+                <p style="text-align: center;">{{ form.text }}</p>
+                <p style="text-align: center; margin: 0; color: #ebf5ee;">on what time should be done</p>
+                <p style="text-align: center;">{{ form.time_to_beat }}</p>
+                <p style="text-align: center; margin: 0; color: #ebf5ee;">on what day should be done</p>
+                <p style="text-align: center;">{{ form.day_to_beat }}</p>
+                <p style="text-align: center; margin: 0; color: #ebf5ee;">how important the task is</p>
+                <p style="text-align: center;">{{ form.important }}</p>
+                <p style="text-align: center; margin: 0; color: #ebf5ee;">is it long-term task</p>
+                <p style="text-align: center;">{{ form.is_great }}</p>
+                <p style="text-align: center; margin: 0; color: #ebf5ee;">would you need to repeat task</p>
+                <p style="text-align: center;">{{ form.is_repeat }}</p>
+                {% if form.is_repeat %}
+                <p style="text-align: center; margin: 0; color: #ebf5ee;" >how often you need to repeat</p>
+                <p style="text-align: center;">{{ form.repeat_every }}</p>
+                {% endif %}
+                <div class="modal-footer" style="background-color: #1f273b; display: flex;">
+                  <button type="submit" class="btn btn-light">
+                    Save changes
+                  </button>
+                </div>
               </form>
               {% endblock %}
             </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
-              <button type="button" class="btn btn-primary">
-                Save changes
-              </button>
+            
+          </div>
+        </div>
+
+      <!-- Tasks -->
+</div>
+    </div>
+    <div class="container">
+      <div class="row" style="display: flex; justify-content: center;">
+        <div class="col">
+          {% block hey %}
+          <h1 style="color: #ebf5ee;">Today, {{ today }}</h1><!--с этим разобраться-->
+          {% endblock %}
+          {% for task in latest_targets_list %}
+          <div class="card mb-3" style="max-width: 540px;">
+            <div class="row g-0">
+              <div class="col-md-8">
+                <div class="card-body">
+                  <p class="card-text">{{ task.text }}</p>
+                </div>
+              </div>
+              <div class="col-md-4" style="display: flex; align-items: center; justify-content: center;">
+                <p data-bs-toggle="modal" data-bs-target="#exampleModal">{{task.time_to_beat}}</p>
+              </div>          
+              
             </div>
           </div>
+          {% endfor %}
+        </div>
+        <div class="col">
+          {% block yo %}
+          <h1 style="color: #ebf5ee;">Tomorrow, {{ today }}</h1><!--с этим разобраться-->
+          {% endblock %}
+          {% for task in latest_targets_list %}
+          <div class="card mb-3" style="max-width: 540px;">
+            <div class="row g-0">
+              <div class="col-md-8">
+                <div class="card-body">
+                  <p class="card-text">{{ task.text }}</p>
+                </div>
+              </div>
+              <div class="col-md-4" style="display: flex; align-items: center; justify-content: center;">
+                <p>{{task.time_to_beat}}</p>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
         </div>
       </div>
     </div>
+    
   </body>
 </html>
