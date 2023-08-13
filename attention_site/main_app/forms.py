@@ -25,4 +25,4 @@ class LoginUserForm(AuthenticationForm):
 class AddTargetForm(forms.ModelForm):
     class Meta:
         model = Target
-        fields = ['text', 'time_to_beat', 'day_to_beat', 'important', 'is_great', 'is_repeat', 'repeat_every']
+        fields = ['text', 'time_to_beat', 'day_to_beat', 'is_great', 'is_repeat', 'repeat_every']

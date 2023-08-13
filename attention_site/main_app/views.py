@@ -7,7 +7,8 @@ from django.contrib.auth import logout, login
 from django.views.generic import CreateView
 from .forms import *
 from .models import Target
-from django.utils.dateparse import parse_date
+import datetime
+from random import choice
 '''
 bootstrap быстрый сделать
 '''
@@ -44,6 +45,32 @@ def logout_user(request):
     logout(request)
     return redirect('index')
 
+def check_today_yo(form, today):
+    return form.pub_day == today
+
+def clean_auxiliary_data():
+    for i in Target.objects.all():
+        if i.auxiliary:
+            i.delete()
+
+def check_day_form(form, today):
+    date = form.pub_day
+    difference_between_two_days = today - date
+    for _ in range(difference_between_two_days.days):
+        date += datetime.timedelta(days=form.repeat_every)
+        if date == today:
+            new_form = Target(form.text, form.time_to_beat, today, form.is_done, form.is_great, form.is_repeat, form.repeat_every, form.pub_date, form.pub_day, auxiliary=1)
+            new_form.save()
+            return [1, new_form]
+    return [0]
+def settings(request):
+    return render(request, "main_app/settings.html", {})
+
+def delete_item(request, task_id):
+    goodbye = Target.objects.get(pk=task_id)
+    goodbye.delete()
+    return redirect('main_screen')
+
 def main_screen_yo(request):
     latest_targets_list = Target.objects.order_by("-pub_date")
     if request.method == 'POST':
@@ -57,9 +84,33 @@ def main_screen_yo(request):
                 form.add_error(None, 'Error detected check')
     else:
         form = AddTargetForm()
+    list_today_tasks = []
+    list_tomorrow_tasks = []
+    list_great_task = []
+    today = datetime.date.today()
+    tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+    for i in latest_targets_list:
+        today_date_yo = check_day_form(i, today)
+        tomorrow_date_yo = check_day_form(i, tomorrow)
+        if check_today_yo(i, today):
+            list_today_tasks.append(i)
+        if today_date_yo[0]:
+            list_today_tasks.append(today_date_yo[1])
+        if tomorrow_date_yo[0]:
+            list_tomorrow_tasks.append(tomorrow_date_yo[1])
+        if i.is_great:
+            list_great_task.append(i)
     context = {
+        'random_great_task': choice(list_great_task),
+        'list_great_tasks': list_great_task,
         'form': form,
+        'today_tasks': list_today_tasks,
+        'tomorrow_tasks': list_tomorrow_tasks,
         'latest_targets_list': latest_targets_list,
-        'today': parse_date,
+        'today': today.strftime('%A %d %B %Y'),
+        'current_time': str(datetime.datetime.now().time()),
+        'tomorrow': tomorrow.strftime('%A %d %B %Y'),
+        'today_co': datetime.date.today(),
+        'tomorrow_co': datetime.date.today() + datetime.timedelta(days=1),
     }
     return render(request, "main_app/main_screen.html", context)
