@@ -10,4 +10,5 @@ urlpatterns = [
     path('main/', views.main_screen_yo, name='main_screen'),
     path('main/settings', views.settings, name='settings'),
     path('main/delete_item/<task_id>', views.delete_item, name='delete_item'),
+    path('main/end_task/<task_id>', views.end_task, name='end_task'),
 ]

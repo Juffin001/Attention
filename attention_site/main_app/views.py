@@ -48,9 +48,11 @@ def logout_user(request):
 def check_today_yo(form, today):
     return form.pub_day == today
 
-def clean_auxiliary_data():
+def clean_auxiliary_data(today):
     for i in Target.objects.all():
         if i.auxiliary:
+            i.delete()
+        if (today - i.pub_day).days > 3 and i.is_repeat == 0:
             i.delete()
 
 def check_day_form(form, today):
@@ -59,7 +61,7 @@ def check_day_form(form, today):
     for _ in range(difference_between_two_days.days):
         date += datetime.timedelta(days=form.repeat_every)
         if date == today:
-            new_form = Target(form.text, form.time_to_beat, today, form.is_done, form.is_great, form.is_repeat, form.repeat_every, form.pub_date, form.pub_day, auxiliary=1)
+            new_form = Target.objects.create(text=form.text, day_to_beat=today, time_to_beat=form.time_to_beat, is_done=0, is_great=form.is_great, is_repeat=form.is_repeat, repeat_every=form.repeat_every, pub_date=form.pub_date, pub_day=form.pub_day, auxiliary=1)
             new_form.save()
             return [1, new_form]
     return [0]
@@ -71,7 +73,15 @@ def delete_item(request, task_id):
     goodbye.delete()
     return redirect('main_screen')
 
+def end_task(request, task_id):
+    task_end = Target.objects.get(pk=task_id)
+    task_end.is_done = 1
+    task_end.save()
+    return redirect('main_screen')
+
 def main_screen_yo(request):
+    today = datetime.date.today()
+    clean_auxiliary_data(today)
     latest_targets_list = Target.objects.order_by("-pub_date")
     if request.method == 'POST':
         form = AddTargetForm(request.POST)
@@ -87,7 +97,6 @@ def main_screen_yo(request):
     list_today_tasks = []
     list_tomorrow_tasks = []
     list_great_task = []
-    today = datetime.date.today()
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
     for i in latest_targets_list:
         today_date_yo = check_day_form(i, today)

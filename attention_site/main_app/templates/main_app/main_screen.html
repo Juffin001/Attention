@@ -150,7 +150,7 @@
       </div>
       <div class="modal-footer" style="background-color: #ebf5ee; display: flex; justify-content: space-between;">
         <div>
-        <button type="button" class="btn btn-dark">End This Task</button>
+        <a href="{% url 'end_task' task.id %}"><button type="button" class="btn btn-dark">End This Task</button></a>
         </div>
         <div>
         <button type="button" class="btn btn-dark">Edit</button>
@@ -191,7 +191,7 @@
       </div>
       <div class="modal-footer" style="background-color: #ebf5ee; display: flex; justify-content: space-between;">
         <div>
-        <button type="button" class="btn btn-dark">End This Task</button>
+        <a href="{% url 'end_task' task.id %}"><button type="button" class="btn btn-dark">End This Task</button></a>
         </div>
         <div>
         <button type="button" class="btn btn-dark">Edit</button>
@@ -210,8 +210,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-dark" data-bs-dismiss="modal">No</button>
-        <button type="button" class="btn btn-danger">yeah</button>
-      </div>
+        <a href="{% url 'delete_item' task.id %}"><button type="button" class="btn btn-danger">yeah</button></a>      </div>
     </div>
   </div>
 </div>
